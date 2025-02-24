@@ -1,0 +1,22 @@
+﻿[
+  {
+    "id": 0,
+    "voice": 0,
+    "debugName": "Intro-DEV",
+    "text": [
+      "What?%% Are you scared or something?",
+      "They told me interesting% interesting things about you.",
+      "We'll wait for you.",
+      "%%$T  %%$E  %%$R  %%$M  %%$I  %%$N  %%$A  %%$T  %%$E."
+    ]
+  },
+
+  {
+    "id": 66,
+    "voice": -1,
+    "debugName": "F_U_N",
+    "text": [
+      "Pretend there's mysterious dialogue here!",
+    ]
+  },
+]

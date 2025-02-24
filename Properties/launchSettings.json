@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Suburbs": {
+      "commandName": "Project",
+      "workingDirectory": "$(SolutionDir)"
+    }
+  }
+}

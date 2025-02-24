@@ -1,0 +1,14 @@
+﻿[
+  {
+    // Do you wanna have a bad time?
+    "id": 0,
+    "file": "Sounds\\sans_sound"
+  },
+
+  {
+    "id": 1,
+    "file":  "Sounds\\generic1_voice"
+  }
+
+  // So on 
+]
