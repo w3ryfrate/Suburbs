@@ -8,7 +8,7 @@ public class DynamicText
     public const float MAX_WIDTH = GameRoot.WINDOW_WIDTH;
     public const float SHAKING_VALUE = 1.15f;
     public static float Scale { get; private set; } = 1.5f;
-    public static int Kerning { get; private set; } = 9;
+    public static int Kerning { get; private set; } = 12;
 
     public string Text;
     public Vector2 Position;

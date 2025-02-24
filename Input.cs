@@ -7,6 +7,8 @@ public static class Input
 {
     public static event Action<Keys> OnKeyPressed;
 
+    // TODO: Improve this Input a bit so that it supports multiple keys input
+
     private static KeyboardState currentKeyboardState;
     private static KeyboardState prevKeyboardState;
     public static void Update()
@@ -20,7 +22,7 @@ public static class Input
                 OnKeyPressed?.Invoke(key);
             }
         }
-
+        
         prevKeyboardState = Keyboard.GetState();
     }
 }

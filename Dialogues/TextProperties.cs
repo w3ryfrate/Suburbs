@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,17 +7,20 @@ namespace Suburbs.Dialogues;
 
 public struct TextProperties
 {
-    public readonly static TextProperties Default = new(Color.White, false, 0f);
+    public readonly static TextProperties Default = new(Color.White, false, 0f, GameRoot.StandardRegularFont, null);
 
+    public SpriteFont Font;
+    public string Speaker;
     public Color Color;
     public float Delay;
     public bool ShakingEffect;
 
-    public TextProperties(Color color, bool shakingEffect, float delay)
+    public TextProperties(Color color, bool shakingEffect, float delay, SpriteFont fontStyle, string speaker)
     {
         Color = color;
         ShakingEffect = shakingEffect;
         Delay = delay;
+        Speaker = speaker;
     }
 
     public static TextProperties ParseTags(ref string str)
@@ -47,7 +51,7 @@ public struct TextProperties
                     break;
 
                 case '%':
-                    delay += 0.20f;
+                    delay += 0.30f;
                     toRemove.Add((i, 1));
                     break;
 

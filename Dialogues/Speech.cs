@@ -8,15 +8,20 @@ namespace Suburbs.Dialogues;
 
 public static class Speech
 {
+    // RANDOM NAMES!!!
+    public const string NORMAN_TAG = "N:";
+    public const string BELLA_TAG = "B:";
+
     public static Dialogue CurrentDialogue { get; private set; }
     public static Voice CurrentVoice { get; private set; }
+    public static string SpeakerName { get; private set; }
 
-    public static readonly List<int> FiredDialogues = [];
+    public static readonly List<int> SeenDialogues = [];
 
     public static int ActiveLine { get; private set; } = 0;
     public static event Action<int?> OnDialogueFired;
 
-    private static readonly Dictionary<int, List<DynamicText>> _dialogueLines = new();
+    private static readonly Dictionary<int, (string speaker, List<DynamicText> line)> _dialogueLines = new();
 
     private static float _timePerCharacter; // Typewriter speed
     private static int _visibleCharacters = 0;  // Global visible character count
@@ -24,7 +29,7 @@ public static class Speech
     private static float _pendingDelay = 0f; // Stores delay to be applied after a word
     private static bool _typingComplete = false;
 
-    public static void FireDialogue(int dialogueId, float timePerCharacter = 0.033f, float startPosX = 55, float startPoxY = 575)
+    public static void FireDialogue(int dialogueId, float timePerCharacter = 0.035f, float startPosX = 55, float startPoxY = 575)
     {
         CurrentDialogue = Dialogue.Get(dialogueId);
         CurrentVoice = Voice.Get(CurrentDialogue.VoiceId);
@@ -37,11 +42,26 @@ public static class Speech
         for (int i = 0; i < CurrentDialogue.Text.Length; i++)
         {
             string line = CurrentDialogue.Text[i];
-            string[] wordsInLine = line.Split(' ');
+            string speaker = null;
+
+            switch (line[0].ToString() + line[1])
+            {
+                // Random names, to change later lol
+                case NORMAN_TAG:
+                    speaker = "Norman";
+                    line = line.Replace(NORMAN_TAG, null);
+                    break;
+
+                case BELLA_TAG:
+                    speaker = "Bella";
+                    line = line.Replace(BELLA_TAG, null);
+                    break;
+            }
 
             List<DynamicText> dynamicLine = [];
-            _dialogueLines.Add(i, dynamicLine);
+            _dialogueLines.Add(i, (speaker, dynamicLine));
 
+            string[] wordsInLine = line.Split(' ');
             Vector2 word_position = new(startPosX, startPoxY);
             foreach (string word in wordsInLine)
             {
@@ -58,13 +78,18 @@ public static class Speech
                         word_position.Y += GameRoot.StandardRegularFont.LineSpacing * DynamicText.Scale;
                     }
                 }
+                if (word.Contains('\n'))
+                {
+                    word_position.X = startPosX - GameRoot.StandardRegularFont.Spacing * DynamicText.Scale;
+                    word_position.Y += GameRoot.StandardRegularFont.LineSpacing * DynamicText.Scale;
+                }
 
                 DynamicText dText = new(processedWord, word_position, word_info);
                 dynamicLine.Add(dText);
             }
         }
 
-        FiredDialogues.Add(dialogueId);
+        SeenDialogues.Add(dialogueId);
         OnDialogueFired?.Invoke(dialogueId);
     }
 
@@ -109,15 +134,15 @@ public static class Speech
         }
     }
 
-
     public static void Draw(SpriteBatch spriteBatch)
     {
         if (CurrentDialogue is null)
             return;
 
         int drawnCharacters = 0;
-        foreach (var text in _dialogueLines[ActiveLine])
+        foreach (var text in _dialogueLines[ActiveLine].line)
         {
+            SpeakerName = _dialogueLines[ActiveLine].speaker;
             drawnCharacters += text.DrawSpeech(spriteBatch, _visibleCharacters - drawnCharacters);
         }
     }
@@ -153,13 +178,13 @@ public static class Speech
 
     private static int GetTotalCharacters()
     {
-        return _dialogueLines[ActiveLine].Sum(text => text.Text.Length);
+        return _dialogueLines[ActiveLine].line.Sum(text => text.Text.Length);
     }
 
     private static (char character, float delay, bool isLastInWord) GetNextCharacterWithDelay()
     {
         int count = 0;
-        foreach (var text in _dialogueLines[ActiveLine])
+        foreach (var text in _dialogueLines[ActiveLine].line)
         {
             if (_visibleCharacters - count < text.Text.Length)
             {
