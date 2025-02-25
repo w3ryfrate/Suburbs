@@ -1,16 +1,23 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Suburbs.Data;
+﻿using Suburbs.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Suburbs.Dialogues;
 
-public static class Speech
+public static class Speech 
 {
     // RANDOM NAMES!!!
-    public const string NORMAN_TAG = "N:";
-    public const string BELLA_TAG = "B:";
+    public const string BOB_TAG = "B:";
+    public const string AMELIA_TAG = "A:";
+
+    public const string BOB_NAME = "BOB";
+    public const string AMELIA_NAME = "AMELIA";
+    public static readonly Dictionary<string, int> SpeakerVoiceID = new()
+    {
+        { BOB_NAME, Voice.BAD_TIME },
+        { AMELIA_NAME, Voice.BAD_TIME },
+    };
 
     public static Dialogue CurrentDialogue { get; private set; }
     public static Voice CurrentVoice { get; private set; }
@@ -29,13 +36,12 @@ public static class Speech
     private static float _pendingDelay = 0f; // Stores delay to be applied after a word
     private static bool _typingComplete = false;
 
-    public static void FireDialogue(int dialogueId, float timePerCharacter = 0.035f, float startPosX = 55, float startPoxY = 575)
+    public static void FireDialogue(int dialogueId, float timePerCharacter = 0.033f, float startPosX = 55, float startPoxY = 575)
     {
         CurrentDialogue = Dialogue.Get(dialogueId);
-        CurrentVoice = Voice.Get(CurrentDialogue.VoiceId);
 
-        _timePerCharacter = timePerCharacter;
         _dialogueLines.Clear();
+        _timePerCharacter = timePerCharacter;
         _visibleCharacters = 0;
         _typingComplete = false;
 
@@ -47,14 +53,14 @@ public static class Speech
             switch (line[0].ToString() + line[1])
             {
                 // Random names, to change later lol
-                case NORMAN_TAG:
-                    speaker = "Norman";
-                    line = line.Replace(NORMAN_TAG, null);
+                case BOB_TAG:
+                    speaker = BOB_NAME;
+                    line = line.Replace(BOB_TAG, null);
                     break;
 
-                case BELLA_TAG:
-                    speaker = "Bella";
-                    line = line.Replace(BELLA_TAG, null);
+                case AMELIA_TAG:
+                    speaker = AMELIA_NAME;
+                    line = line.Replace(AMELIA_TAG, null);
                     break;
             }
 
@@ -72,16 +78,11 @@ public static class Speech
                 if (prev is not null)
                 {
                     word_position = new(prev.Position.X + prev.Size.X * DynamicText.Scale + DynamicText.Kerning, prev.Position.Y);
-                    if ((word_position.X + GameRoot.StandardRegularFont.MeasureString(processedWord).X) > DynamicText.MAX_WIDTH - 55f)
+                    if ((word_position.X + GameRoot.StandardRegularFont.MeasureString(processedWord).X) > DynamicText.MAX_WIDTH - 55f || prev.Text.Contains('\n'))
                     {
                         word_position.X = startPosX;
                         word_position.Y += GameRoot.StandardRegularFont.LineSpacing * DynamicText.Scale;
                     }
-                }
-                if (word.Contains('\n'))
-                {
-                    word_position.X = startPosX - GameRoot.StandardRegularFont.Spacing * DynamicText.Scale;
-                    word_position.Y += GameRoot.StandardRegularFont.LineSpacing * DynamicText.Scale;
                 }
 
                 DynamicText dText = new(processedWord, word_position, word_info);
@@ -113,18 +114,18 @@ public static class Speech
         {
             var (nextChar, delay, isLastInWord) = GetNextCharacterWithDelay();
 
-            if (CurrentVoice is not null && char.IsLetter(nextChar))
+            if (char.IsLetter(nextChar))
             {
-                CurrentVoice.Play();
+                CurrentVoice?.Play();
             }
 
             _visibleCharacters++;
             _characterTimer -= _timePerCharacter;
 
-            if (isLastInWord) // Apply delay **only if it's the last letter in a word**
+            if (isLastInWord) 
             {
                 _pendingDelay = delay;
-                break; // Stop processing until delay passes
+                break; 
             }
         }
 
@@ -134,7 +135,7 @@ public static class Speech
         }
     }
 
-    public static void Draw(SpriteBatch spriteBatch)
+    public static void Draw()
     {
         if (CurrentDialogue is null)
             return;
@@ -143,7 +144,9 @@ public static class Speech
         foreach (var text in _dialogueLines[ActiveLine].line)
         {
             SpeakerName = _dialogueLines[ActiveLine].speaker;
-            drawnCharacters += text.DrawSpeech(spriteBatch, _visibleCharacters - drawnCharacters);
+            if (SpeakerName is not null) CurrentVoice = Voice.Get(SpeakerVoiceID[SpeakerName]);
+            else CurrentVoice = Voice.Get(Voice.GENERIC_VOICE_1);
+            drawnCharacters += text.DrawSpeech(_visibleCharacters - drawnCharacters);
         }
     }
 
@@ -188,7 +191,7 @@ public static class Speech
         {
             if (_visibleCharacters - count < text.Text.Length)
             {
-                bool isLast = (_visibleCharacters - count == text.Text.Length - 1); // Last char in word?
+                bool isLast = (_visibleCharacters - count == text.Text.Length - 1); 
                 return (text.Text[_visibleCharacters - count], text.Properties.Delay, isLast);
             }
             count += text.Text.Length;

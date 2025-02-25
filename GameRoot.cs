@@ -13,14 +13,13 @@ namespace Suburbs
         public const int WINDOW_WIDTH = 1280;
         public const int WINDOW_HEIGHT = 750;
 
+        public static SpriteBatch SpriteBatch { get; private set; }
         public static GameTime Time { get; private set; }
         public static SpriteFont StandardRegularFont { get; private set; }
         public static SpriteFont DebugFont { get; private set; }
         public static readonly Random RNG = new();
-        public static readonly int IdentityValue = RNG.Next(101);
 
         private readonly GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
 
         private bool _debugEnabled = false;
         private Color _debugTextColor = Color.White;
@@ -50,17 +49,19 @@ namespace Suburbs
             _graphics.ApplyChanges();
 
             Speech.OnDialogueFired += OnDialogue;
-            Input.OnKeyPressed += OnInput;
+            Input.OnKeyPressed += OnKeyInput;
 
             base.Initialize();
 
             _textBoxPosition = new(30, WINDOW_HEIGHT - 200);
-            Speech.FireDialogue(Dialogue.INTRO);
+            Speech.FireDialogue(Dialogue.INTRO_DEV);
         }
 
         protected override void LoadContent()
         {
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            base.LoadContent();
+
+            SpriteBatch = new SpriteBatch(GraphicsDevice);
             StandardRegularFont = Content.Load<SpriteFont>("Fonts\\standard_font");
             DebugFont = Content.Load<SpriteFont>("Fonts\\debugFont");
 
@@ -76,13 +77,12 @@ namespace Suburbs
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (GamePad.GetState(PlayerIndex.One).Buttons.X == ButtonState.Pressed)
+                Speech.NextLine();
+
             Time = gameTime;
             Input.Update();
             Speech.Update(Time);
-
-            if (IdentityValue == 66 && Speech.CurrentDialogue is null && !Speech.SeenDialogues.Contains(Dialogue.EVENT_66)) {
-                Speech.FireDialogue(Dialogue.EVENT_66, 0.01f);
-            }
 
             base.Update(gameTime);
         }
@@ -91,26 +91,27 @@ namespace Suburbs
         {
             GraphicsDevice.Clear(_clearColor);
 
-            _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+            SpriteBatch.Begin(samplerState: SamplerState.PointClamp);
+
             if (Speech.CurrentDialogue is not null)
             {
                 if (Speech.SpeakerName is not null)
                 {
                     Vector2 pos = new(_textBoxPosition.X + 25f, _textBoxPosition.Y - _nameBox.Height);
-                    _spriteBatch.Draw(_nameBox, pos, Color.White);
-                    _spriteBatch.DrawString(StandardRegularFont, Speech.SpeakerName, pos + new Vector2(_nameBox.Width / 2, _nameBox.Height / 2), Color.White, 0f, StandardRegularFont.MeasureString(Speech.SpeakerName) / 2, DynamicText.Scale, 0, 1f);
+                    SpriteBatch.Draw(_nameBox, pos, Color.White);
+                    SpriteBatch.DrawString(StandardRegularFont, Speech.SpeakerName, pos + new Vector2(_nameBox.Width / 2, _nameBox.Height / 2), Color.White, 0f, StandardRegularFont.MeasureString(Speech.SpeakerName) / 2, DynamicText.Scale, 0, 1f);
                 }
-                _spriteBatch.Draw(_textBox, _textBoxPosition, Color.White);
+                SpriteBatch.Draw(_textBox, _textBoxPosition, Color.White);
             }
-            Speech.Draw(_spriteBatch);
+            Speech.Draw();
             if (_debugEnabled)
             {
-                _spriteBatch.DrawString(DebugFont, _debugText, _debugTextPosition, _debugTextColor, 0f, Vector2.Zero, 1, 0, 1f);
-                _spriteBatch.DrawString(DebugFont, IdentityValue.ToString(), new(0, _debugTextPosition.Y), _debugTextColor);
+                SpriteBatch.DrawString(DebugFont, _debugText, _debugTextPosition, _debugTextColor, 0f, Vector2.Zero, 1, 0, 1f);
             }
-            _spriteBatch.End();
 
             base.Draw(gameTime);
+            SpriteBatch.End();
+
         }
 
         private void OnDialogue(int? dialogueId)
@@ -125,7 +126,7 @@ namespace Suburbs
             _debugTextPosition = new(WINDOW_WIDTH - DebugFont.MeasureString(_debugText).X, DebugFont.MeasureString(_debugText).Y);
         }
 
-        private void OnInput(Keys key)
+        private void OnKeyInput(Keys key)
         {
             switch (key)
             {

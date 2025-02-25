@@ -1,5 +1,4 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,19 +6,17 @@ namespace Suburbs.Dialogues;
 
 public struct TextProperties
 {
-    public readonly static TextProperties Default = new(Color.White, false, 0f, GameRoot.StandardRegularFont, null);
+    public readonly static TextProperties Default = new(Color.White, 0f, 0f, null);
 
-    public SpriteFont Font;
     public string Speaker;
     public Color Color;
     public float Delay;
-    public bool ShakingEffect;
+    public float ShakingValue;
 
-    public TextProperties(Color color, bool shakingEffect, float delay, SpriteFont fontStyle, string speaker)
+    public TextProperties(Color color, float shakingValue, float delay, string speaker)
     {
         Color = color;
-        ShakingEffect = shakingEffect;
-        Delay = delay;
+        ShakingValue = shakingValue;
         Speaker = speaker;
     }
 
@@ -29,6 +26,7 @@ public struct TextProperties
         List<(int index, int count)> toRemove = [];
 
         float delay = 0f;
+        float shakingValue = 0;
         for (int i = 0; i < str.Length; i++)
         {
             char c = str[i];
@@ -46,12 +44,12 @@ public struct TextProperties
                     break;
 
                 case '$':
-                    info.ShakingEffect = true;
+                    shakingValue += 0.5f;
                     toRemove.Add((i, 1));
                     break;
 
                 case '%':
-                    delay += 0.30f;
+                    delay += 0.5f;
                     toRemove.Add((i, 1));
                     break;
 
@@ -66,6 +64,7 @@ public struct TextProperties
         }
 
         info.Delay = delay;
+        info.ShakingValue = shakingValue;
         return info;
     }
 }

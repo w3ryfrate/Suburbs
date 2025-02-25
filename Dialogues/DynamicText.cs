@@ -10,9 +10,9 @@ public class DynamicText
     public static float Scale { get; private set; } = 1.5f;
     public static int Kerning { get; private set; } = 12;
 
-    public string Text;
-    public Vector2 Position;
-    public TextProperties Properties;
+    public string Text = string.Empty;
+    public Vector2 Position = Vector2.Zero;
+    public TextProperties Properties = TextProperties.Default;
     public readonly Vector2 Size;
 
     private Color _color;
@@ -26,7 +26,7 @@ public class DynamicText
         Size = GameRoot.StandardRegularFont.MeasureString(text);
     }
 
-    public int DrawSpeech(SpriteBatch spriteBatch, int remainingCharacters)
+    internal int DrawSpeech(int remainingCharacters)
     {
         int drawnCharacters = 0;
 
@@ -36,23 +36,23 @@ public class DynamicText
         float offsetX = 0f;
         float offsetY = 0f;
 
-        if (Properties.ShakingEffect)
+        if (Properties.ShakingValue > 0f)
         {
             double angle = GameRoot.RNG.NextDouble() * 2 * Math.PI;
-            offsetX += (float)Math.Cos(angle) * SHAKING_VALUE;
-            offsetY += (float)Math.Sin(angle) * SHAKING_VALUE;
+            offsetX += (float)Math.Cos(angle) * Properties.ShakingValue;
+            offsetY += (float)Math.Sin(angle) * Properties.ShakingValue;
         }
 
         for (int i = 0; i < Text.Length && i < remainingCharacters; i++)
         {
             string character = Text[i].ToString();
-            
+
             if (!char.IsLetter(Text[i]))
                 Properties.Color = TextProperties.Default.Color;
             else
                 Properties.Color = _color;
 
-            spriteBatch.DrawString(
+            GameRoot.SpriteBatch.DrawString(
                 GameRoot.StandardRegularFont,
                 character,
                 new(Position.X + offsetX * Scale, Position.Y + offsetY * Scale),

@@ -4,17 +4,13 @@ namespace Suburbs.Data;
 
 public class Dialogue : IDeserializeableObject
 {
-    public const int INTRO = 0;
-    public const int EVENT_66 = 66;
+    public const int INTRO_DEV = 0;
 
     [JsonPropertyName("id")]
     public int Id { get; init; }
 
     [JsonPropertyName("debugName")]
     public string DebugName { get; init; }
-
-    [JsonPropertyName("voice")]
-    public int VoiceId { get; init; }
 
     [JsonPropertyName("text")]
     public string[] Text { get; init; }

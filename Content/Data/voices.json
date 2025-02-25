@@ -1,12 +1,12 @@
 ﻿[
   {
     // Do you wanna have a bad time?
-    "id": 0,
-    "file": "Sounds\\sans_sound"
+    "id": -15,
+    "file": "Sounds\\bad_time_voice"
   },
 
   {
-    "id": 1,
+    "id": 0,
     "file":  "Sounds\\generic1_voice"
   }
 

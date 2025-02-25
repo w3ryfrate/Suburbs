@@ -7,30 +7,21 @@
   // -----------------
   // "&{colorCode}" = Displays colored text
   // -----------------
-  // "$" = Displays shaky text
+  // "$" = Displays shaky text, cumulative for more shakiness
   // -----------------
   // "\n" = Makes the text jump to a new line.
 
   {
     "id": 0,
-    "voice": 1,
     "debugName": "Intro-DEV",
     "text": [
-      "- Stop talking about &RAmong &RUs!",
-      "- It's a dead game% and nobody really liked it anyways.",
-      "- On more important news...",
-      "- You got a &Yraise!! *Clap* *clap*",
-      "- Your new pay is:% 10 USD a month!",
-      "- &BGod bless &RAmerica..."
+      "B:- Stop talking about your &Ypension!",
+      "B:- It's gay%%.\n - Nobody will really get there anyways.",
+      "B:- On more important news...",
+      "B:- You got a &Yraise!! *Clap* *clap*",
+      "B:- Your new pay is:% 10 USD a month!",
+      "A:- &BGod bless &RAmerica...",
+      "R%%-Right...?"
     ]
   },
-
-  {
-    "id": 66,
-    "voice": -1,
-    "debugName": "F_U_N",
-    "text": [
-      "..."
-    ]
-  }
 ]

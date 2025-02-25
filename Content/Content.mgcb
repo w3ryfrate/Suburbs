@@ -13,6 +13,9 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Data/dialogues.json
+/copy:Data/dialogues.json
+
 #begin Data/voices.json
 /copy:Data/voices.json
 
@@ -30,17 +33,17 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/standard_font.spritefont
 
+#begin Sounds/bad_time_voice.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/bad_time_voice.mp3
+
 #begin Sounds/generic1_voice.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Sounds/generic1_voice.mp3
-
-#begin Sounds/sans_sound.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/sans_sound.mp3
 
 #begin Textures/Characters/player_spritesheet.png
 /importer:TextureImporter
