@@ -37,21 +37,14 @@ public class Voice : IDeserializeableObject
         }
     }
 
-    private int _cooldown = 2;
     public void Play(float volume = 1.0f, float pitch = 0f, float pan = 0f)
     {
-        _cooldown--;
-        if (_cooldown > 0)
-            return;
-
         volume = Math.Clamp(volume, 0f, 1f);
         pitch = Math.Clamp(pitch, -1f, 1f);
         pan = Math.Clamp(pan, -1f, 1f);
 
         if (!_sfx.Play(volume, pitch, pan) || _sfx is null)
             throw new System.Exception($"ERROR: Failed to play sound effect: {FilePath}");
-
-        _cooldown = 2;
     }
 
 }

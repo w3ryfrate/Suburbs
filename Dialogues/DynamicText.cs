@@ -26,7 +26,7 @@ public class DynamicText
         Size = GameRoot.StandardRegularFont.MeasureString(text);
     }
 
-    internal int DrawSpeech(int remainingCharacters)
+    internal int DrawSpeech(SpriteBatch spriteBatch, int remainingCharacters)
     {
         int drawnCharacters = 0;
 
@@ -48,11 +48,13 @@ public class DynamicText
             string character = Text[i].ToString();
 
             if (!char.IsLetter(Text[i]))
+            {
                 Properties.Color = TextProperties.Default.Color;
+            }
             else
                 Properties.Color = _color;
 
-            GameRoot.SpriteBatch.DrawString(
+            spriteBatch.DrawString(
                 GameRoot.StandardRegularFont,
                 character,
                 new(Position.X + offsetX * Scale, Position.Y + offsetY * Scale),

@@ -1,4 +1,5 @@
-﻿using Suburbs.Data;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Suburbs.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,13 +31,16 @@ public static class Speech
 
     private static readonly Dictionary<int, (string speaker, List<DynamicText> line)> _dialogueLines = new();
 
-    private static float _timePerCharacter; // Typewriter speed
-    private static int _visibleCharacters = 0;  // Global visible character count
+    private static float _timePerCharacter; 
+    private static int _visibleCharacters = 0;  
     private static float _characterTimer = 0f;
-    private static float _pendingDelay = 0f; // Stores delay to be applied after a word
+    private static float _pendingDelay = 0f; 
     private static bool _typingComplete = false;
 
-    public static void FireDialogue(int dialogueId, float timePerCharacter = 0.033f, float startPosX = 55, float startPoxY = 575)
+    private static float _voiceTimer = 0f; 
+    private readonly static float _voiceCooldown = 0.04f; 
+
+    public static void FireDialogue(int dialogueId, float timePerCharacter = 0.03f, float startPosX = 55, float startPoxY = 575)
     {
         CurrentDialogue = Dialogue.Get(dialogueId);
 
@@ -114,9 +118,10 @@ public static class Speech
         {
             var (nextChar, delay, isLastInWord) = GetNextCharacterWithDelay();
 
-            if (char.IsLetter(nextChar))
+            if (char.IsLetter(nextChar) && _voiceTimer <= 0f)
             {
                 CurrentVoice?.Play();
+                _voiceTimer = _voiceCooldown;
             }
 
             _visibleCharacters++;
@@ -128,6 +133,7 @@ public static class Speech
                 break; 
             }
         }
+        _voiceTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         if (_visibleCharacters >= GetTotalCharacters())
         {
@@ -135,7 +141,7 @@ public static class Speech
         }
     }
 
-    public static void Draw()
+    public static void Draw(SpriteBatch spriteBatch)
     {
         if (CurrentDialogue is null)
             return;
@@ -144,9 +150,11 @@ public static class Speech
         foreach (var text in _dialogueLines[ActiveLine].line)
         {
             SpeakerName = _dialogueLines[ActiveLine].speaker;
+
             if (SpeakerName is not null) CurrentVoice = Voice.Get(SpeakerVoiceID[SpeakerName]);
             else CurrentVoice = Voice.Get(Voice.GENERIC_VOICE_1);
-            drawnCharacters += text.DrawSpeech(_visibleCharacters - drawnCharacters);
+
+            drawnCharacters += text.DrawSpeech(spriteBatch, _visibleCharacters - drawnCharacters);
         }
     }
 

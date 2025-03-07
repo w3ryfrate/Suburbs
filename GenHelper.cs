@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace Suburbs.Helpers;
+﻿namespace Suburbs.Helpers;
 
 public static class GenHelper
 {
