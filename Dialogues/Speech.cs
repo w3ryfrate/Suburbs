@@ -29,7 +29,7 @@ public static class Speech
     public static int ActiveLine { get; private set; } = 0;
     public static event Action<int?> OnDialogueFired;
 
-    private static readonly Dictionary<int, (string speaker, List<DynamicText> line)> _dialogueLines = new();
+    private static readonly Dictionary<int, (string speaker, List<SpeechText> line)> _dialogueLines = new();
 
     private static float _timePerCharacter; 
     private static int _visibleCharacters = 0;  
@@ -68,7 +68,7 @@ public static class Speech
                     break;
             }
 
-            List<DynamicText> dynamicLine = [];
+            List<SpeechText> dynamicLine = [];
             _dialogueLines.Add(i, (speaker, dynamicLine));
 
             string[] wordsInLine = line.Split(' ');
@@ -78,18 +78,18 @@ public static class Speech
                 string processedWord = word; 
                 TextProperties word_info = TextProperties.ParseTags(ref processedWord);
 
-                DynamicText prev = dynamicLine.LastOrDefault();
+                SpeechText prev = dynamicLine.LastOrDefault();
                 if (prev is not null)
                 {
-                    word_position = new(prev.Position.X + prev.Size.X * DynamicText.Scale + DynamicText.Kerning, prev.Position.Y);
-                    if ((word_position.X + GameRoot.StandardRegularFont.MeasureString(processedWord).X) > DynamicText.MAX_WIDTH - 55f || prev.Text.Contains('\n'))
+                    word_position = new(prev.Position.X + prev.Size.X * SpeechText.Scale + SpeechText.Kerning, prev.Position.Y);
+                    if ((word_position.X + GameRoot.StandardRegularFont.MeasureString(processedWord).X) > SpeechText.MAX_WIDTH - 55f || prev.DisplayedString.Contains('\n'))
                     {
                         word_position.X = startPosX;
-                        word_position.Y += GameRoot.StandardRegularFont.LineSpacing * DynamicText.Scale;
+                        word_position.Y += GameRoot.StandardRegularFont.LineSpacing * SpeechText.Scale;
                     }
                 }
 
-                DynamicText dText = new(processedWord, word_position, word_info);
+                SpeechText dText = new(GameRoot.StandardRegularFont, processedWord, word_position, word_info);
                 dynamicLine.Add(dText);
             }
         }
@@ -154,7 +154,7 @@ public static class Speech
             if (SpeakerName is not null) CurrentVoice = Voice.Get(SpeakerVoiceID[SpeakerName]);
             else CurrentVoice = Voice.Get(Voice.GENERIC_VOICE_1);
 
-            drawnCharacters += text.DrawSpeech(spriteBatch, _visibleCharacters - drawnCharacters);
+            drawnCharacters += text.Draw(spriteBatch, _visibleCharacters - drawnCharacters);
         }
     }
 
@@ -189,7 +189,7 @@ public static class Speech
 
     private static int GetTotalCharacters()
     {
-        return _dialogueLines[ActiveLine].line.Sum(text => text.Text.Length);
+        return _dialogueLines[ActiveLine].line.Sum(text => text.DisplayedString.Length);
     }
 
     private static (char character, float delay, bool isLastInWord) GetNextCharacterWithDelay()
@@ -197,12 +197,12 @@ public static class Speech
         int count = 0;
         foreach (var text in _dialogueLines[ActiveLine].line)
         {
-            if (_visibleCharacters - count < text.Text.Length)
+            if (_visibleCharacters - count < text.DisplayedString.Length)
             {
-                bool isLast = (_visibleCharacters - count == text.Text.Length - 1); 
-                return (text.Text[_visibleCharacters - count], text.Properties.Delay, isLast);
+                bool isLast = (_visibleCharacters - count == text.DisplayedString.Length - 1); 
+                return (text.DisplayedString[_visibleCharacters - count], text.Properties.Delay, isLast);
             }
-            count += text.Text.Length;
+            count += text.DisplayedString.Length;
         }
 
         return (' ', 0f, false); // Default fallback (shouldn't happen)

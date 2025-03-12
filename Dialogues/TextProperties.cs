@@ -13,11 +13,19 @@ public struct TextProperties
     public float Delay;
     public float ShakingValue;
 
+    public float Rotation;
+    public float Scale;
+    public Vector2 Origin;
+
     public TextProperties(Color color, float shakingValue, float delay, string speaker)
     {
         Color = color;
         ShakingValue = shakingValue;
         Speaker = speaker;
+
+        Rotation = 0f;
+        Scale = 1f;
+        Origin = Vector2.Zero;
     }
 
     public static TextProperties ParseTags(ref string str)

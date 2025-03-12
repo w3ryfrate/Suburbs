@@ -3,30 +3,28 @@ using System;
 
 namespace Suburbs.Dialogues;
 
-public class DynamicText
+internal class SpeechText : Text
 {
     public const float MAX_WIDTH = GameRoot.WINDOW_WIDTH;
     public const float SHAKING_VALUE = 1.15f;
     public static float Scale { get; private set; } = 1.5f;
     public static int Kerning { get; private set; } = 12;
 
-    public string Text = string.Empty;
     public Vector2 Position = Vector2.Zero;
-    public TextProperties Properties = TextProperties.Default;
     public readonly Vector2 Size;
 
     private Color _color;
 
-    public DynamicText(string text, Vector2 position, TextProperties info)
+    public SpeechText(SpriteFont font, string text, Vector2 position, TextProperties info) : base(font, text)
     {
-        Text = text;
+        DisplayedString = text;
         Position = position;
         Properties = info;
         _color = info.Color;
         Size = GameRoot.StandardRegularFont.MeasureString(text);
     }
 
-    internal int DrawSpeech(SpriteBatch spriteBatch, int remainingCharacters)
+    public int Draw(SpriteBatch spriteBatch, int remainingCharacters)
     {
         int drawnCharacters = 0;
 
@@ -43,11 +41,11 @@ public class DynamicText
             offsetY += (float)Math.Sin(angle) * Properties.ShakingValue;
         }
 
-        for (int i = 0; i < Text.Length && i < remainingCharacters; i++)
+        for (int i = 0; i < DisplayedString.Length && i < remainingCharacters; i++)
         {
-            string character = Text[i].ToString();
+            string character = DisplayedString[i].ToString();
 
-            if (!char.IsLetter(Text[i]))
+            if (!char.IsLetter(DisplayedString[i]))
             {
                 Properties.Color = TextProperties.Default.Color;
             }
@@ -66,7 +64,7 @@ public class DynamicText
                 1f
             );
 
-            offsetX += GameRoot.StandardRegularFont.MeasureString(character).X + GameRoot.StandardRegularFont.Spacing;
+            offsetX += Font.MeasureString(character).X + GameRoot.StandardRegularFont.Spacing;
             drawnCharacters++;
         }
 

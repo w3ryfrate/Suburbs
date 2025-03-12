@@ -9,20 +9,20 @@ public static class Input
 
     // TODO: Improve this Input a bit so that it supports multiple keys input
 
-    private static KeyboardState currentKeyboardState;
-    private static KeyboardState prevKeyboardState;
+    private static KeyboardState _currentKeyboardState;
+    private static KeyboardState _prevKeyboardState;
     public static void Update()
     {
-        currentKeyboardState = Keyboard.GetState();
+        _currentKeyboardState = Keyboard.GetState();
 
-        foreach (Keys key in currentKeyboardState.GetPressedKeys())
+        foreach (Keys key in _currentKeyboardState.GetPressedKeys())
         {
-            if (!prevKeyboardState.IsKeyDown(key))
+            if (!_prevKeyboardState.IsKeyDown(key))
             {
                 OnKeyPressed?.Invoke(key);
             }
         }
         
-        prevKeyboardState = Keyboard.GetState();
+        _prevKeyboardState = Keyboard.GetState();
     }
 }

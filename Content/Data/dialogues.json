@@ -3,7 +3,7 @@
   // -----------------
   // "%" =  Delays the text by 0.2f, cumulative.
   // -----------------
-  // "{char}:" = Displays the namebox with the name of the speaker.
+  // "{char}:" = Displays the namebox with the name of the speaker, also plays the voice of the speaker.
   // -----------------
   // "&{colorCode}" = Displays colored text
   // -----------------
@@ -21,7 +21,16 @@
       "B:- You got a &Yraise!! *Clap* *clap*",
       "B:- Your new pay is:% 10 USD a month!",
       "A:- &BGod bless &RAmerica...",
-      "R%%-Right...?"
+      "Lmao"
     ]
   },
+
+  {
+    "id":  1945,
+    "debugName": "KALINKA-0",
+    "text": [
+      "Kalinka, Kalinka, Kalinka",
+      "*Russian music intensifies intensifigly*"
+    ]
+  }
 ]

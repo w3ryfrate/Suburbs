@@ -57,6 +57,21 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Characters/player_spritesheet.png
 
+#begin Textures/Tilesets/Room_Builder.json
+/copy:Textures/Tilesets/Room_Builder.json
+
+#begin Textures/Tilesets/Room_Builder.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Tilesets/Room_Builder.png
+
 #begin Textures/UI/namebox-0.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -80,4 +95,7 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/UI/textbox-0.png
+
+#begin Tilemaps/test_map0.json
+/copy:Tilemaps/test_map0.json
 

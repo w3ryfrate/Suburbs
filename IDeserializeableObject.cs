@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Suburbs.Map;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -9,26 +10,50 @@ public interface IDeserializeableObject
 {
     public int Id { get; init; }
 
-    protected readonly static JsonSerializerOptions SerializeOptions = new()
+    public readonly static JsonSerializerOptions DefaultSerializeOptions = new()
     {
         ReadCommentHandling = JsonCommentHandling.Skip,
         AllowTrailingCommas = true,
     };
 
-    protected static void TryDeserialize<T>(ref T[] data, string filePath)
+    public static T TryDeserializeObject<T>(string filePath)
+    {
+        T obj = default;
+
+        try
+        {
+            obj = JsonSerializer.Deserialize<T>(File.ReadAllText(filePath), DefaultSerializeOptions);
+        }
+        catch (JsonException)
+        {
+            GameDebug.LogFatal($"Parsing JSON failed: '{filePath}' with type: {typeof(T).Name}");
+            Environment.Exit(1);
+        }
+        catch (IOException)
+        {
+            GameDebug.LogFatal($"Reading file failed: '{filePath}' with type: {typeof(T).Name}");
+            Environment.Exit(1);
+        }
+
+        return obj;
+    }
+
+    protected static void TryDeserializeData<T>(ref T[] data, string filePath)
     {
         try
         {
-            data = JsonSerializer.Deserialize<T[]>(File.ReadAllText(filePath), SerializeOptions)
-                      ?? throw new Exception("ERROR: Deserialization returned null");
+            data = JsonSerializer.Deserialize<T[]>(File.ReadAllText(filePath), DefaultSerializeOptions)
+                      ?? throw new Exception("Deserialization returned null");
         }
-        catch (JsonException ex)
+        catch (JsonException)
         {
-            throw new Exception($"ERROR: Parsing JSON failed: '{filePath}': {ex.Message}");
+            GameDebug.LogFatal($"Parsing JSON failed: '{filePath}' with type: {typeof(T).Name}");
+            Environment.Exit(1);
         }
-        catch (IOException ex)
+        catch (IOException)
         {
-            throw new Exception($"ERROR: Reading file failed: '{filePath}': {ex.Message}");
+            GameDebug.LogFatal($"Reading file failed: '{filePath}' with type: {typeof(T).Name}");
+            Environment.Exit(1);
         }
     }
 
@@ -40,7 +65,9 @@ public interface IDeserializeableObject
         }
         catch (Exception)
         {
-            throw new Exception($"ERROR: Failed to return deserialized object of type: {typeof(T).Name}.");
+            GameDebug.LogFatal($"Failed to get IDeserializeableObject of type: {typeof(T).Name} with Id: {id}");
+            Environment.Exit(1);
+            return default;
         }
     }
 }

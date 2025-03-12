@@ -14,7 +14,7 @@ public class Voice : IDeserializeableObject
     private static Voice[] _data;  
 
     [JsonPropertyName("id")]
-    public int Id { get; init; }
+    public required int Id { get; init; }
 
     [JsonPropertyName("file")]
     public string FilePath { get; init; }
@@ -30,7 +30,7 @@ public class Voice : IDeserializeableObject
 
     public static void LoadFromFile(ContentManager content, string filePath = "Content\\Data\\voices.json")
     {
-        IDeserializeableObject.TryDeserialize(ref _data, filePath);
+        IDeserializeableObject.TryDeserializeData(ref _data, filePath);
         foreach (Voice voice in _data)
         {
             voice._sfx = content.Load<SoundEffect>(voice.FilePath);

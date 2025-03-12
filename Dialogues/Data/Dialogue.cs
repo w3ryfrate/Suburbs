@@ -7,7 +7,7 @@ public class Dialogue : IDeserializeableObject
     public const int INTRO_DEV = 0;
 
     [JsonPropertyName("id")]
-    public int Id { get; init; }
+    public required int Id { get; init; }
 
     [JsonPropertyName("debugName")]
     public string DebugName { get; init; }
@@ -21,6 +21,6 @@ public class Dialogue : IDeserializeableObject
 
     public static void LoadFromFile(string filePath = "Content\\Data\\dialogues.json")
     {
-        IDeserializeableObject.TryDeserialize(ref _data, filePath);
+        IDeserializeableObject.TryDeserializeData(ref _data, filePath);
     }
 }

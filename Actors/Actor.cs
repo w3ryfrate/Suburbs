@@ -14,12 +14,13 @@ public class Actor
     {
         ActorManager.Add(this);
         WorldPosition = worldPosition;
-        Sprite = sprite ?? throw new System.Exception("ERROR: Sprite can't be null.");
+        Sprite = sprite;
+        if (Sprite is null) GameDebug.LogWarning($"Sprite component of Actor: {typeof(Actor).Name} is null");
     }
 
     public virtual void Draw(SpriteBatch spriteBatch)
     {
-        Sprite.Draw(spriteBatch, WorldPosition);
+        Sprite?.Draw(spriteBatch, WorldPosition);
     }
 
     public virtual void Update() { }
